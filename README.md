@@ -15,3 +15,11 @@ x2 y2
 ...
 xN yN
 ```
+
+# Run it and test it
+
+```shell
+go build ; time ./vornoli < test.txt > t.ppm ; display t.ppm
+```
+
+Requires golang to be installed, and ImageMagick for display command otherwise will work on any system.
