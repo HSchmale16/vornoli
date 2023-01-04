@@ -38,24 +38,29 @@ func main() {
 
 	// fmt.Println(transform)
 
-	size := input.w * input.h
-	neighbors := make([]int, size)
 	colors := makeColors(input.numPoints)
 
 	fmt.Println("P3\n", input.w, input.h, "\n", "255")
 
-	for i := 0; i < input.h; i++ {
-		for j := 0; j < input.w; j++ {
-			v2 := geom.V2(float32(j), float32(i))
-			v2 = v2.Transform(&transform)
-			//fmt.Println(v2)
-			// x := v3.X
-			// y := v3.Y
+	ch := make(chan Color, 10000)
+	go func() {
+		for i := 0; i < input.h; i++ {
+			for j := 0; j < input.w; j++ {
+				v2 := geom.V2(float32(j), float32(i))
+				v2 = v2.Transform(&transform)
+				//fmt.Println(v2)
+				// x := v3.X
+				// y := v3.Y
 
-			idx := i*input.w + j
-			neighbors[idx] = closestToCoord(input.points, v2)
-			writeColor(colors[neighbors[idx]])
+				color_idx := closestToCoord(input.points, v2)
+				ch <- colors[color_idx]
+			}
 		}
+		close(ch)
+	}()
+
+	for px := range ch {
+		writeColor(px)
 	}
 }
 
